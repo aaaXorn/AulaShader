@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 732114809}
   - component: {fileID: 732114808}
   m_Layer: 0
-  m_Name: CubeTest
+  m_Name: TreeTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -399,7 +399,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fa491881c0a2bfe4e9ec8e653ea8c5f6, type: 2}
+  - {fileID: 2100000, guid: c509b15f7decd7343b8131ba7118bbc0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
