@@ -39,10 +39,11 @@ Shader "Unlit/shLit_Tree"
                 {
                     Varyings Output;
 
-                    float oscilation = 0.05 - (cos(_Time.w) * 0.1 * Input.position.z);
+                    float oscilation = 0.001 - (cos(_Time.w) * 0.1 * Input.position.z);
                     float3 position = Input.position.xyz;
 
-                    position += Input.normal * oscilation;
+                    if(Input.color.x > 0.5)
+                        position += Input.normal * oscilation;
 
                     //Output.positionVAR = Input.position;
                     Output.positionVAR = TransformObjectToHClip(position);
