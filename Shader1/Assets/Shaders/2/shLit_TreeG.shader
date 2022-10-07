@@ -39,7 +39,7 @@ Shader "Unlit/shLit_TreeG"
                 {
                     Varyings Output;
 
-                    float oscilation = 0.0005 - (cos(_Time.w) * 0.005 * Input.position.z);
+                    float oscilation = -0.0005 - (cos(_Time.w) * 0.006 * Input.position.z);
                     float3 position = Input.position.xyz;
 
                     if(Input.color.y > 0.5)
