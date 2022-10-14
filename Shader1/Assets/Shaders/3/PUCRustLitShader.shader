@@ -5,7 +5,7 @@ Shader "Unlit/PUCRustLitShader"
         _MainText ("Texture", 2D) = "white" {}
         _RustText("RustTexture", 2D) = "white" {}
 
-        _RustSelect("RustSelect", Range(-1,1)) = 0.5
+        _RustSelect("RustSelect", Range(-5,5)) = 0.5
         _RustDirection("RustDir", Vector) = (0,0,0,0)
 
         _WindSelect("WindSelect", Range(0,1)) = 0.5
@@ -56,7 +56,7 @@ Shader "Unlit/PUCRustLitShader"
                     half2 uvVAR : TEXCOORD0;
                     half4 color : COLOR0;
 
-                    float3 pureposition : COLOR1;
+                    half3 normalVAR : NORMAL;
                 };
 
                 Varyings vert(Attributes Input)
@@ -74,15 +74,10 @@ Shader "Unlit/PUCRustLitShader"
                     Output.positionVAR = TransformObjectToHClip(position);
 
                     Output.uvVAR = Input.uv;
-                    Output.pureposition = position;
-
-                    //luz principal (direct light)
-                    Light l = GetMainLight();
-                    //dot é o produto vetorial entre dois vetores
-                    float intensity = dot(l.direction, TransformObjectToWorldNormal(Input.normal));
+                    Output.normalVAR = Input.normal;// = position
 
                     //cor do vertex (não é textura)
-                    Output.color = Input.color * intensity;
+                    Output.color = Input.color;
 
                     return Output;
                 }
@@ -90,8 +85,12 @@ Shader "Unlit/PUCRustLitShader"
                 float4 frag(Varyings Input) : SV_TARGET
                 {
                     half4 color = Input.color;
+                    color += _MainText.Sample(sampler_MainText, Input.uvVAR);
 
-                    if(dot(Input.pureposition, _RustDirection.xyz) > _RustSelect)
+                    float force = clamp(0,1, dot(TransformObjectToWorldNormal(Input.normalVAR), _RustDirection.xyz));
+                    /*
+                    //corte seco, separando as duas texturas
+                    if(dot(Input.normalVAR, _RustDirection.xyz) > _RustSelect)
                     {
                         //+= ou *= pra também usar o vertex color
                         color += _MainText.Sample(sampler_MainText, Input.uvVAR);
@@ -100,8 +99,15 @@ Shader "Unlit/PUCRustLitShader"
                     {
                         color += _RustText.Sample(sampler_RustText, Input.uvVAR);
                     }
+                    */
+                    color += _RustText.Sample(sampler_RustText, Input.uvVAR) * force * _RustSelect;
 
-                    return color;
+                    //luz principal (direct light)
+                    Light l = GetMainLight();
+                    //dot é o produto vetorial entre dois vetores
+                    float intensity = dot(l.direction, TransformObjectToWorldNormal(Input.normalVAR));
+
+                    return color * intensity;
                 }
 
 
