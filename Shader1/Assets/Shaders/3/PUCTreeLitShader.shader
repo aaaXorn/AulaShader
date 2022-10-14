@@ -1,8 +1,11 @@
-Shader "Unlit/PUCLitShader"
+Shader "Unlit/PUCTreeLitShader"
 {
     Properties
     {
         _MainText ("Texture", 2D) = "white" {}
+        _WindSelect("WindSelect", Range(0,1)) = 0.5
+        _WindForce("WindForce", Range(-0.5, 0.5)) = 0.5
+        _WindAddMod("WindAddMod", Range(-1, 1)) = 0.5
     }
 
     SubShader
@@ -19,11 +22,20 @@ Shader "Unlit/PUCLitShader"
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
+                //pega as propriedades
+                float _WindSelect;
+                float _WindForce;
+                float _WindAddMod;
+
+                texture2D _MainText;
+                SamplerState sampler_MainText;
+
                 struct Attributes
                 {
                     //:POSITION é uma diretiva de pós compilação
                     float4 position : POSITION;
-                    float2 uv : TEXCOORD0;
+                    //half é menos preciso que float, mas mais otimizado
+                    half2 uv : TEXCOORD0;
                     half3 normal : NORMAL;
                     half4 color : COLOR;
                 };
@@ -31,7 +43,7 @@ Shader "Unlit/PUCLitShader"
                 struct Varyings
                 {
                     float4 positionVAR : SV_POSITION;
-                    float2 uvVAR : TEXCOORD0;
+                    half2 uvVAR : TEXCOORD0;
                     half4 color : COLOR0;
                 };
 
@@ -39,8 +51,13 @@ Shader "Unlit/PUCLitShader"
                 {
                     Varyings Output;
 
-                    float oscilation = 0.05 - (cos(_Time.w) * 0.1 * Input.position.z);
-                    float3 position = Input.position.xyz + Input.normal * oscilation;
+                    float3 position = Input.position.xyz;
+                    float oscilation = _WindAddMod - (cos(_Time.w) * _WindForce * Input.position.y);
+                    
+                    if(Input.color.y > _WindSelect)
+                    {
+                        position += Input.normal * oscilation;
+                    }
                     //Output.positionVAR = Input.position;
                     Output.positionVAR = TransformObjectToHClip(position);
                     Output.uvVAR = Input.uv;
@@ -58,7 +75,10 @@ Shader "Unlit/PUCLitShader"
                 //var de 4 dimensões: RGBA
                 float4 frag(Varyings Input) : SV_TARGET
                 {
-                    float4 color = Input.color;
+                    half4 color = Input.color;
+
+                    //+= ou *= pra também usar o vertex color
+                    color = _MainText.Sample(sampler_MainText, Input.uvVAR);
                     
                     return color;
                 }

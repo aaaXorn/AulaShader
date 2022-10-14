@@ -1,4 +1,4 @@
-Shader "Unlit/shLit_TreeG"
+Shader "Unlit/PUCLitShader1"
 {
     Properties
     {
@@ -39,12 +39,8 @@ Shader "Unlit/shLit_TreeG"
                 {
                     Varyings Output;
 
-                    float oscilation = -0.0005 - (cos(_Time.w) * 0.01 * Input.position.y);
-                    float3 position = Input.position.xyz;
-
-                    if(Input.color.y > 0.5)
-                        position += Input.normal * oscilation;
-
+                    float oscilation = 0.05 - (cos(_Time.w) * 0.1 * Input.position.z);
+                    float3 position = Input.position.xyz + Input.normal * oscilation;
                     //Output.positionVAR = Input.position;
                     Output.positionVAR = TransformObjectToHClip(position);
                     Output.uvVAR = Input.uv;
