@@ -64,7 +64,7 @@ Shader "Custom/sh_RBPwVoronoi"
                     Output.uvVAR = Input.uv;
                     Output.normalVAR = Input.normal;
 
-                    Output.color = Input.color;
+                    Output.color = half4(0,0,0,0);//Input.color;
 
                     //pega a posição do vertex na cena
                     Output.worldPositionVAR = mul(unity_ObjectToWorld, Input.position);
@@ -100,15 +100,15 @@ Shader "Custom/sh_RBPwVoronoi"
                         }
                     }
 
-                    if(Input.worldPositionVAR.x > _RustStartPoint.x)
+                    if(Input.worldPositionVAR.x > minDist + _RustStartPoint.x)
                     {
                         color += _RustText.Sample(sampler_RustText, Input.uvVAR);
-                        color += minDist * minDist;
+                        color.x += minDist * minDist;
                     }
                     else
                     {
                         color += _MainText.Sample(sampler_MainText, Input.uvVAR);
-                        color -= minDist * minDist;
+                        color.y += minDist * minDist;
                     }
 
                     Light l = GetMainLight();
