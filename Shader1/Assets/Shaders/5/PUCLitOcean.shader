@@ -1,10 +1,10 @@
-Shader "Custom/PUCLit"
+Shader "Custom/PUCLitOcean"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _NormalTex("Texture", 2D) = "white" {}
-        
+        _NormalTex("Normal", 2D) = "white" {}
+        _NormalForce("NormalForce", Range(-2,2)) = 1
     }
         SubShader
         {
@@ -21,9 +21,11 @@ Shader "Custom/PUCLit"
                
                 texture2D _MainTex;
                 SamplerState sampler_MainTex;
+                float4 _MainTex_ST;
                 texture2D _NormalTex;
-                SamplerState sampler_NormalTex;
 
+                SamplerState sampler_NormalTex;
+                float _NormalForce;
 
                 struct Attributes
                 {
@@ -46,9 +48,10 @@ Shader "Custom/PUCLit"
                     Varyings Output;
                     float3 position = Input.position.xyz;
                     Output.positionVAR = TransformObjectToHClip(position);
-                    Output.uvVAR = Input.uv;
+                    Output.uvVAR = (Input.uv * _MainTex_ST.xy + _MainTex_ST.zw);//tiling
                     Output.colorVar = Input.color;
-                    Output.normalVar = Input.normal;
+
+                    Output.normalVar = TransformObjectToWorldNormal(Input.normal);
 
                     return Output;
                 }
@@ -59,14 +62,16 @@ Shader "Custom/PUCLit"
                     
                     Light l = GetMainLight();
 
-                   float intensity = dot(l.direction, TransformObjectToWorldNormal(Input.normalVar));
+                   half4 normalmap = _NormalTex.Sample(sampler_NormalTex, half2(_Time.x+Input.uvVAR.x, Input.uvVAR.y))*2-1;
+                   half4 normalmap2 = _NormalTex.Sample(sampler_NormalTex, half2( Input.uvVAR.x, _Time.x + Input.uvVAR.y)) * 2 - 1;
+                  
+                   normalmap *= normalmap2;
+                   float intensity = dot(l.direction, Input.normalVar+ normalmap.xzy* _NormalForce);
 
                     color *= _MainTex.Sample(sampler_MainTex, Input.uvVAR);
                     color *= intensity;
                     return color;
                 }
-
-
 
             ENDHLSL
         }
