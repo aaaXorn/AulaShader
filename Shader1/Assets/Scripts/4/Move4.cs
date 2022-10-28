@@ -9,6 +9,9 @@ public class Move4 : MonoBehaviour
     Vector3 _initPos;
 
     [SerializeField]
+    bool move;
+
+    [SerializeField]
     Vector3 _targetPos;
 
     [SerializeField]
@@ -21,15 +24,20 @@ public class Move4 : MonoBehaviour
     
     void Update()
     {
-        if(_x_gotoR)
+        if(move)
         {
-            transform.position = Vector3.MoveTowards(transform.position, _initPos + _targetPos, Time.deltaTime * spd);
-            if(Vector3.Distance(transform.position, _initPos + _targetPos) < 0.1f) _x_gotoR = false;
+            if(_x_gotoR)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, _initPos + _targetPos, Time.deltaTime * spd);
+                if(Vector3.Distance(transform.position, _initPos + _targetPos) < 0.1f) _x_gotoR = false;
+            }
+            else
+            {
+                transform.position = Vector3.MoveTowards(transform.position, _initPos - _targetPos, Time.deltaTime * spd);
+                if(Vector3.Distance(transform.position, _initPos - _targetPos) < 0.1f) _x_gotoR = true;
+            }
         }
         else
-        {
-            transform.position = Vector3.MoveTowards(transform.position, _initPos - _targetPos, Time.deltaTime * spd);
-            if(Vector3.Distance(transform.position, _initPos - _targetPos) < 0.1f) _x_gotoR = true;
-        }
+            transform.Rotate(spd, spd, spd, Space.World);
     }
 }
