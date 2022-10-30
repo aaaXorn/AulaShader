@@ -1,10 +1,18 @@
 Shader "Custom/sh_Ocean"
 {
+    //https://catlikecoding.com/unity/tutorials/flow/waves/
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
         _NormalTex("Normal", 2D) = "white" {}
         _NormalForce("NormalForce", Range(-2,2)) = 1
+        
+
+
+        _WaveColor("WaveColor", Color) = (1, 1, 1, 1)
+        _WaveAmplitude("WaveAmplitude", float) = 1
+        _WaveLength("WaveLength", float) = 10
+        _WaveSpeed("WaveSpeed", float) = 1
     }
         SubShader
         {
@@ -26,6 +34,12 @@ Shader "Custom/sh_Ocean"
 
                 SamplerState sampler_NormalTex;
                 float _NormalForce;
+                
+                float4 _WaveColor;
+                float _WaveAmplitude;
+                float _WaveLength;
+                float _WaveSpeed;
+                
 
                 struct Attributes
                 {
@@ -47,11 +61,22 @@ Shader "Custom/sh_Ocean"
                 {
                     Varyings Output;
                     float3 position = Input.position.xyz;
+
+                    //wave position
+                    float length = 2 * 3.14159265f / _WaveLength;
+                    float oscillation = length * (position.x - _WaveSpeed * _Time.y);
+                    position.x += cos(oscillation) * _WaveAmplitude;
+                    position.y += sin(oscillation) * _WaveAmplitude;
+                    //normal
+                    float3 tangent = normalize(float3(1 - length * _WaveAmplitude * sin(oscillation),
+                                               length * _WaveAmplitude * cos(oscillation), 0));
+                    float3 normal = float3(-tangent.y, tangent.x, 0);
+
                     Output.positionVAR = TransformObjectToHClip(position);
                     Output.uvVAR = (Input.uv * _MainTex_ST.xy + _MainTex_ST.zw);//tiling
-                    Output.colorVar = Input.color;
+                    Output.colorVar = _WaveColor;//Input.color;
 
-                    Output.normalVar = TransformObjectToWorldNormal(Input.normal);
+                    Output.normalVar = TransformObjectToWorldNormal(normal);
 
                     return Output;
                 }
