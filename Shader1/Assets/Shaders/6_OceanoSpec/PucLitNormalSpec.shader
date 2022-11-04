@@ -4,8 +4,8 @@ Shader "Custom/PucLitNormalSpec"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _NormalTex("Texture", 2D) = "white" {}
-        _NormalForce("NormalForce", Range(-2,2)) = 1
-        _SpecForce("SpecularForce", Range(0,2)) = 1
+        _NormalForce("NormalForce", Range(-2, 2)) = 1
+        _SpecForce("SpecularForce", Range(0, 2)) = 1
     }
         SubShader
         {
@@ -29,15 +29,15 @@ Shader "Custom/PucLitNormalSpec"
 
                 struct Attributes
                 {
-                    float4 position :POSITION;
-                    half2 uv       :TEXCOORD0;
+                    float4 position : POSITION;
+                    half2 uv       : TEXCOORD0;
                     half3 normal : NORMAL;
                     half4 color : COLOR;
                 };
             
                 struct Varyings 
                 {
-                    float4 positionVAR :SV_POSITION;
+                    float4 positionVAR : SV_POSITION;
                     float4 locpositionVAR : COLOR1;
                     half2 uvVAR       : TEXCOORD0;
                     half3 normalVAR : NORMAL;
@@ -63,9 +63,9 @@ Shader "Custom/PucLitNormalSpec"
                     
                     Light l = GetMainLight();
 
-                    half4 normalmap= _NormalTex.Sample(sampler_NormalTex, Input.uvVAR)*2-1;
+                    half4 normalmap= _NormalTex.Sample(sampler_NormalTex, Input.uvVAR) * 2 - 1;
 
-                    float intensity = dot(l.direction, Input.normalVAR+ normalmap.xzy* _NormalForce);
+                    float intensity = dot(l.direction, Input.normalVAR+ normalmap.xzy * _NormalForce);
 
                     float3 viewDirection = normalize(_WorldSpaceCameraPos - mul(unity_ObjectToWorld, Input.locpositionVAR).xyz);
 
@@ -73,7 +73,7 @@ Shader "Custom/PucLitNormalSpec"
 
                     if(intensity < 0.0)
                     {
-                        specularReflection = float3(0.0,0.0,0.0);
+                        specularReflection = float3(0.0, 0.0, 0.0);
                     }
                     else
                     {

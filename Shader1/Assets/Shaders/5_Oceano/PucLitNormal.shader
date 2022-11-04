@@ -4,7 +4,7 @@ Shader "Custom/PucLitNormal"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _NormalTex("Texture", 2D) = "white" {}
-        _NormalForce("NormalForce", Range(-2,2)) = 1
+        _NormalForce("NormalForce", Range(-2, 2)) = 1
     }
         SubShader
         {
@@ -27,18 +27,18 @@ Shader "Custom/PucLitNormal"
 
                 struct Attributes
                 {
-                    float4 position :POSITION;
-                    half2 uv       :TEXCOORD0;
+                    float4 position : POSITION;
+                    half2 uv       : TEXCOORD0;
                     half3 normal : NORMAL;
                     half4 color : COLOR;
                 };
             
                 struct Varyings 
                 {
-                    float4 positionVAR :SV_POSITION;
+                    float4 positionVAR : SV_POSITION;
                     half2 uvVAR       : TEXCOORD0;
-                    half3 normalVar : NORMAL;
-                    half4 colorVar : COLOR0;
+                    half3 normalVAR : NORMAL;
+                    half4 colorVAR : COLOR0;
                 };
 
                 Varyings vert(Attributes Input)
@@ -47,21 +47,21 @@ Shader "Custom/PucLitNormal"
                     float3 position = Input.position.xyz;
                     Output.positionVAR = TransformObjectToHClip(position);
                     Output.uvVAR = Input.uv;
-                    Output.colorVar = Input.color;
-                    Output.normalVar = TransformObjectToWorldNormal(Input.normal);
+                    Output.colorVAR = Input.color;
+                    Output.normalVAR = TransformObjectToWorldNormal(Input.normal);
 
                     return Output;
                 }
 
                 half4 frag(Varyings Input) :SV_TARGET
                 { 
-                    half4 color = Input.colorVar;
+                    half4 color = Input.colorVAR;
                     
                     Light l = GetMainLight();
 
-                   half4 normalmap= _NormalTex.Sample(sampler_NormalTex, Input.uvVAR)*2-1;
+                   half4 normalmap= _NormalTex.Sample(sampler_NormalTex, Input.uvVAR) * 2 - 1;
 
-                   float intensity = dot(l.direction, Input.normalVar+ normalmap.xzy* _NormalForce);
+                   float intensity = dot(l.direction, Input.normalVAR + normalmap.xzy * _NormalForce);
 
                     color *= _MainTex.Sample(sampler_MainTex, Input.uvVAR);
                     color *= intensity;

@@ -5,7 +5,7 @@ Shader "Custom/sh_Ocean"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _NormalTex("Normal", 2D) = "white" {}
-        _NormalForce("NormalForce", Range(-2,2)) = 1
+        _NormalForce("NormalForce", Range(-2, 2)) = 1
         
 
 
@@ -43,16 +43,16 @@ Shader "Custom/sh_Ocean"
 
                 struct Attributes
                 {
-                    float4 position :POSITION;
-                    half2 uv       :TEXCOORD0;
+                    float4 position : POSITION;
+                    half2 uv : TEXCOORD0;
                     half3 normal : NORMAL;
                     half4 color : COLOR;
                 };
             
                 struct Varyings 
                 {
-                    float4 positionVAR :SV_POSITION;
-                    half2 uvVAR       : TEXCOORD0;
+                    float4 positionVAR : SV_POSITION;
+                    half2 uvVAR : TEXCOORD0;
                     half3 normalVar : NORMAL;
                     half4 colorVar : COLOR0;
                 };
@@ -87,11 +87,11 @@ Shader "Custom/sh_Ocean"
                     
                     Light l = GetMainLight();
 
-                   half4 normalmap = _NormalTex.Sample(sampler_NormalTex, half2(_Time.x+Input.uvVAR.x, Input.uvVAR.y))*2-1;
+                   half4 normalmap = _NormalTex.Sample(sampler_NormalTex, half2(_Time.x+Input.uvVAR.x, Input.uvVAR.y)) * 2 - 1;
                    half4 normalmap2 = _NormalTex.Sample(sampler_NormalTex, half2( Input.uvVAR.x, _Time.x + Input.uvVAR.y)) * 2 - 1;
                   
                    normalmap *= normalmap2;
-                   float intensity = dot(l.direction, Input.normalVar+ normalmap.xzy* _NormalForce);
+                   float intensity = dot(l.direction, Input.normalVar + normalmap.xzy * _NormalForce);
 
                     color *= _MainTex.Sample(sampler_MainTex, Input.uvVAR);
                     color *= intensity;
