@@ -6,6 +6,8 @@ Shader "Custom/sh_NormalSpec"
         _NormalTex("NormalTexture", 2D) = "white" {}
         _NormalForce("NormalForce", Range(-2, 2)) = 1
         _SpecForce("SpecularForce", Range(0, 2)) = 1
+
+        _Color("Color", Color) = (1, 1, 1, 1)
     }
         SubShader
         {
@@ -26,6 +28,8 @@ Shader "Custom/sh_NormalSpec"
                 SamplerState sampler_NormalTex;
                 float _NormalForce;
                 float _SpecForce;
+
+                float4 _Color;
 
                 struct Attributes
                 {
@@ -51,7 +55,8 @@ Shader "Custom/sh_NormalSpec"
                     Output.positionVAR = TransformObjectToHClip(position);
                     Output.locpositionVAR = float4(position, 1);
                     Output.uvVAR = Input.uv;
-                    Output.colorVAR = Input.color;
+                    //Output.colorVAR = Input.color;
+                    Output.colorVAR = _Color;
                     Output.normalVAR = TransformObjectToWorldNormal(Input.normal);
 
                     return Output;
