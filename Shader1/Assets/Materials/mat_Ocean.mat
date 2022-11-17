@@ -106,9 +106,9 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _WaveAmplitude: 1
+    - _WaveAmplitude: 0.2
     - _WaveLength: 10
-    - _WaveSpeed: 1
+    - _WaveSpeed: 2
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
