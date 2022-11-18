@@ -57,7 +57,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 9542bdcb083dc934986321cb93d5fca1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2179646b764c7174a87c9b0ef383bac8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -65,7 +65,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTex:
-        m_Texture: {fileID: 2800000, guid: dd3884e6f008b994ca35748e5e1e4a6e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2942a434d4252384580be56d7e735a94, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -77,11 +77,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SnowNormalTex:
-        m_Texture: {fileID: 2800000, guid: 5589b6dccf1aadf43948cf73fa99eabc, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2942a434d4252384580be56d7e735a94, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SnowTex:
-        m_Texture: {fileID: 2800000, guid: cceb7a9fd443bf2459623011b3e2e57d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2179646b764c7174a87c9b0ef383bac8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -133,9 +133,9 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.9503575, g: 0.36320752, b: 1, a: 1}
+    - _Color: {r: 1, g: 0, b: 0.88251305, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SnowColor: {r: 0.6522837, g: 0.36445355, b: 0.6603774, a: 1}
+    - _SnowColor: {r: 0.6503562, g: 0.46453363, b: 0.6886792, a: 1}
     - _SnowDirection: {r: 1, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

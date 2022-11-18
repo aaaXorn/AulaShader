@@ -8,6 +8,10 @@ Shader "Custom/sh_LSD"
         _SpecForce("SpecularForce", Range(0, 2)) = 1
 
         _Color("InitialColor", Color) = (1, 1, 1, 1)
+
+        _RainbowUVMod("RainbowUVModifier", float) = 1
+        _RainbowSinMod("RainbowTimeModifier", float) = 1
+        _RainbowMixMod("RainbowMixModifier", float) = 1
     }
         SubShader
         {
@@ -31,6 +35,10 @@ Shader "Custom/sh_LSD"
 
                 float4 _Color;
 
+                float _RainbowUVMod;
+                float _RainbowSinMod;
+                float _RainbowMixMod;
+
                 struct Attributes
                 {
                     float4 position : POSITION;
@@ -47,6 +55,14 @@ Shader "Custom/sh_LSD"
                     half3 normalVAR : NORMAL;
                     half4 colorVAR : COLOR0;
                 };
+
+                float4 rainbow(float level)
+                {
+                    float r = float(level <= 2.0) + float(level > 4.0) * 0.5;
+                    float g = max(1.0 - abs(level - 2.0) * 0.5, 0.0);
+                    float b = (1.0 - (level - 4.0) * 0.5) * float(level >= 4.0);
+                    return float4(r, g, b, 1);
+                }
 
                 Varyings vert(Attributes Input)
                 {
@@ -65,6 +81,11 @@ Shader "Custom/sh_LSD"
                 half4 frag(Varyings Input) :SV_TARGET
                 { 
                     half4 color = Input.colorVAR;
+
+                    float pos = Input.uvVAR.x * _RainbowUVMod + _Time.y * _RainbowSinMod;
+                    float4 clr = rainbow(abs(sin(pos) * 5));
+                    clr = (clr + rainbow(abs(sin(pos + _RainbowMixMod) * 5))) / 2;
+                    color *= clr;
                     
                     Light l = GetMainLight();
 
@@ -91,12 +112,8 @@ Shader "Custom/sh_LSD"
                     color *= _MainTex.Sample(sampler_MainTex, Input.uvVAR);
                     color += float4(specularReflection, 0) * 0.05;
 
-                    color.x += Input.uvVAR.x * _SinTime.w * 0.25;
-
                     return color;
                 }
-
-
 
             ENDHLSL
         }
