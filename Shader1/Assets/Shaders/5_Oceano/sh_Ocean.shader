@@ -55,6 +55,8 @@ Shader "Custom/sh_Ocean"
                     half2 uvVAR : TEXCOORD0;
                     half3 normalVar : NORMAL;
                     half4 colorVar : COLOR0;
+
+                    float4 worldPositionVAR : TEXCOORD1;
                 };
 
                 Varyings vert(Attributes Input)
@@ -78,6 +80,8 @@ Shader "Custom/sh_Ocean"
 
                     Output.normalVar = TransformObjectToWorldNormal(normal);
 
+                    Output.worldPositionVAR = mul(unity_ObjectToWorld, Input.position);
+
                     return Output;
                 }
 
@@ -93,8 +97,12 @@ Shader "Custom/sh_Ocean"
                    normalmap *= normalmap2;
                    float intensity = dot(l.direction, Input.normalVar + normalmap.xzy * _NormalForce);
 
+                    /*float4 clipPos = mul(UNITY_MATRIX_MVP, Input.worldPositionVAR);
+                    float eyeZ = clipPos.w;
+                    if(eyeZ > 1)*/
                     color *= _MainTex.Sample(sampler_MainTex, Input.uvVAR);
                     color *= intensity;
+
                     return color;
                 }
 

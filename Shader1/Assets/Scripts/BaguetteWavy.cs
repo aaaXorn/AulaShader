@@ -19,7 +19,6 @@ public class BaguetteWavy : MonoBehaviour
     void Update()
     {
         float _sin = Time.time * _moveSpd;
-        print(Mathf.Sin(_sin));
         transform.position += Vector3.up * Mathf.Sin(_sin) * _moveAmp;
     }
 }

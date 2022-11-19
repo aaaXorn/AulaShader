@@ -1,6 +1,7 @@
 Shader "Custom/sh_OceanTF"
 {
     //https://catlikecoding.com/unity/tutorials/flow/waves/
+    //https://roystan.net/articles/toon-water/
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
@@ -13,6 +14,10 @@ Shader "Custom/sh_OceanTF"
         _WaveAmplitude("WaveAmplitude", float) = 1
         _WaveLength("WaveLength", float) = 10
         _WaveSpeed("WaveSpeed", float) = 1
+
+        _ColorShallow("ColorShallowDepth", Color) = (1,1,1,1)
+        _ColorDeep("ColorDeepDepth", Color) = (1,1,1,1)
+        _MaxDepth("MaximumDepth", Float) = 1
     }
         SubShader
         {
@@ -25,6 +30,13 @@ Shader "Custom/sh_OceanTF"
                     #pragma fragment frag
                     #include  "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                     #include  "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+                    #if defined(SHADER_API_PSP2)
+                    #define UNITY_BUGGY_TEX2DPROJ4
+                    #define UNITY_PROJ_COORD(a) (a).xyw
+                    #else
+                    #define UNITY_PROJ_COORD(a) a
+                    #endif
 
                
                 texture2D _MainTex;
@@ -42,6 +54,12 @@ Shader "Custom/sh_OceanTF"
                 float _WaveLength;
                 float _WaveSpeed;
                 
+                float4 _ColorShallow;
+                float4 _ColorDeep;
+                float _MaxDepth;
+
+                //pega a variável camera depth texture de fora do script
+                sampler2D _CameraDepthTexture;
 
                 struct Attributes
                 {
@@ -58,6 +76,8 @@ Shader "Custom/sh_OceanTF"
                     half2 uvVAR       : TEXCOORD0;
                     half3 normalVAR : NORMAL;
                     half4 colorVAR : COLOR0;
+
+                    float4 screenPos : TEXCOORD1;
                 };
 
                 Varyings vert(Attributes Input)
@@ -82,13 +102,28 @@ Shader "Custom/sh_OceanTF"
 
                     Output.normalVAR = TransformObjectToWorldNormal(normal);
 
+                    //foam
+                    Output.screenPos = ComputeScreenPos(Output.positionVAR);//(o.vertex);
+
                     return Output;
                 }
 
                 half4 frag(Varyings Input) :SV_TARGET
                 { 
-                    half4 color = Input.colorVAR;
+                    //half4 color = Input.colorVAR;
                     
+                    //foam
+                    //range 0 a 1
+                    float existingDepthRange01 = tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(Input.screenPos)).r;
+                    float existingDepthLinear = LinearEyeDepth(existingDepthRange01,existingDepthRange01);//não aceita 1 parametro sei la pq
+
+                    float depthDiff = existingDepthLinear - Input.screenPos.w;
+
+                    float waterDepthDiff01 = saturate(depthDiff / _MaxDepth);
+                    float4 waterColor = lerp(_ColorShallow, _ColorDeep, waterDepthDiff01);
+
+                    half4 color = waterColor;
+
                     Light l = GetMainLight();
 
                     half4 normalmap = _NormalTex.Sample(sampler_NormalTex, half2(_Time.x+Input.uvVAR.x, Input.uvVAR.y)) * 2 - 1;
